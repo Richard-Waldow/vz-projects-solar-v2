@@ -1,0 +1,29 @@
+---
+import { u } from '../lib/url';
+import { brandById } from '../data/brands';
+interface Props { id: string; class?: string; mono?: boolean }
+const { id, class: cls, mono = false } = Astro.props;
+const b = brandById[id];
+---
+
+{b?.logo ? (
+  <img
+    class:list={['blogo', { 'blogo--light': b.light, 'blogo--mono': mono }, cls]}
+    src={u(`/brands/${b.logo}`)}
+    alt={b.name}
+    loading="lazy"
+    decoding="async"
+  />
+) : (
+  <span class:list={['blogo-text', { 'blogo--mono': mono }, cls]}>{b?.name ?? id}</span>
+)}
+
+<style>
+  .blogo { display: block; max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; mix-blend-mode: multiply; }
+  .blogo--light { filter: brightness(0) saturate(100%) invert(13%) sepia(30%) saturate(1500%) hue-rotate(190deg); mix-blend-mode: normal; }
+  /* Mono auf dunklem Grund: invertiert + „screen“, damit weiße Bildhintergründe verschwinden */
+  .blogo--mono { filter: grayscale(1) invert(1) contrast(1.15); mix-blend-mode: screen; opacity: 0.72; transition: opacity 0.4s var(--ease); }
+  .blogo--light.blogo--mono { filter: grayscale(1) brightness(1.2); mix-blend-mode: screen; opacity: 0.72; }
+  .blogo-text { font-family: var(--f-ui); font-weight: 700; letter-spacing: -0.01em; font-size: 1.15rem; color: #1a2c4a; white-space: nowrap; }
+  .blogo-text.blogo--mono { color: var(--ink); opacity: 0.6; filter: none; mix-blend-mode: normal; }
+</style>
